@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@tycrek/ass-storage-engine": "^0.2.6",
+    "deepmerge": "^4.2.2",
     "pg": "^8.6.0"
   }
 }
