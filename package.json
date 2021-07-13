@@ -1,0 +1,30 @@
+{
+  "name": "@tycrek/ass-psql",
+  "version": "0.0.1",
+  "description": "ass PostgreSQL StorageEngine",
+  "main": "psql.js",
+  "engines": {
+    "node": ">=14.x.x",
+    "npm": ">=7.x.x"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "github:tycrek/ass-psql",
+  "keywords": [
+    "ass",
+    "sharex",
+    "postgresql"
+  ],
+  "author": "tycrek <t@tycrek.com> (https://tycrek.com/)",
+  "license": "ISC",
+  "bugs": "https://github.com/tycrek/ass-psql/issues",
+  "homepage": "https://github.com/tycrek/ass-psql#readme",
+  "funding": {
+    "type": "patreon",
+    "url": "https://patreon.com/tycrek"
+  },
+  "dependencies": {
+    "pg": "^8.6.0"
+  }
+}
