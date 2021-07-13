@@ -1,2 +1,5 @@
 # ass-psql
-PostgreSQL
+
+[ass] PostgreSQL StorageEngine
+
+[ass]: https://github.com/tycrek/ass
