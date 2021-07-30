@@ -24,6 +24,9 @@
     "type": "patreon",
     "url": "https://patreon.com/tycrek"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "dependencies": {
     "@tycrek/ass-storage-engine": "^0.2.6",
     "deepmerge": "^4.2.2",
