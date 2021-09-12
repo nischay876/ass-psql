@@ -2,17 +2,7 @@
 
 [ass] PostgreSQL StorageEngine.
 
-[//]: # (GH PACKAGES TEMPLATE START)
 ## Usage
-
-This package is installable from [GitHub Packages]. To use this package in your project, create an `.npmrc` file in the same directory as your project's `package.json` file with these contents:
-
-```
-@tycrek:registry=https://npm.pkg.github.com
-```
-
-[GitHub Packages]: https://github.com/features/packages
-[//]: # (GH PACKAGES TEMPLATE END)
 
 1. Install with `npm i @tycrek/ass-psql`
 2. Create `auth.psql.json` in your project root with the following content:
