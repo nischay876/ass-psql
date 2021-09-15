@@ -112,9 +112,10 @@ class PSQLStorageEngine extends StorageEngine {
 
 	/**
 	 * Initialize the database connection pool
+	 * @param {StorageEngine} oldEngine The previous storage engine
 	 * @returns {Promise<*>}
 	 */
-	init() {
+	init(oldEngine) {
 		return new Promise((resolve, reject) => {
 			// Get the options 
 			const { ssl, host, port, database, username: user, password } = this.#options;
@@ -125,10 +126,14 @@ class PSQLStorageEngine extends StorageEngine {
 			// Create the table if it doesn't exist
 			PSQLStorageEngine.pool.query(`SELECT * FROM pg_catalog.pg_tables`, (err, res) => {
 				if (err) reject(err);
-				else if (res.rows.findIndex((row) => row.tablename === TABLE_NAME) === -1)
+				else if (res.rows.findIndex((row) => row.tablename === TABLE_NAME) === -1) {
 					PSQLStorageEngine.pool.query(`CREATE TABLE ${TABLE_NAME} (id text PRIMARY KEY, data jsonb NOT NULL);`,
-						(err) => (err && !err.message.includes('does not exist')) ? reject(err) : resolve(`Table ${TABLE_NAME} created`));
-				else resolve(`Table ${TABLE_NAME} exists`);
+						(err) => (err && !err.message.includes('does not exist'))
+							? reject(err)
+							: oldEngine.get()
+								.then((oldData) => this.migrate(oldData))
+								.then(() => resolve(`Table ${TABLE_NAME} created`)));
+				} else resolve(`Table ${TABLE_NAME} exists`);
 			});
 		});
 	}
@@ -140,7 +145,6 @@ class PSQLStorageEngine extends StorageEngine {
 	get size() { return this.#size(); }
 	async #size() {
 		try {
-
 			const promise = new Promise((resolve, reject) =>
 				PSQLStorageEngine.pool.query(`SELECT COUNT(*) FROM ${TABLE_NAME};`, (err, res) =>
 					(err) ? reject(err)
@@ -179,5 +183,12 @@ const assEngine = require('./PapitoPsqlAss');
 module.exports = {
 	EngineName,
 	EngineVersion,
-	PSQLStorageEngine
+	PSQLStorageEngine,
+
+	_ENGINE_: (oldEngine) => {
+		assEngine.init(oldEngine)
+			.then(console.log)
+			.catch(console.error);
+		return assEngine;
+	}
 };
