@@ -4,6 +4,7 @@ const { name: EngineName, version: EngineVersion } = require('./package.json');
 const { Pool } = require('pg');
 const { StorageType, StorageEngine, StorageFunction, StorageFunctionType, StorageFunctionGroup, KeyFoundError, KeyNotFoundError } = require('@tycrek/ass-storage-engine');
 
+let TABLE = '';
 const TIMEOUTS = {
 	IDLE: 30000,
 	CONNECT: 5000,
@@ -28,7 +29,7 @@ const OPTIONS = {
  * @returns {Promise<*>} The resource data
  * @throws {KeyNotFoundError} If the resource is not found
  */
-function get(table, resourceId) {
+function get(resourceId) {
 	return new Promise((resolve, reject) =>
 		(!resourceId)
 			? PSQLStorageEngine.pool.query(`SELECT * FROM ${table};`,
@@ -50,7 +51,7 @@ function get(table, resourceId) {
  * @returns {Promise<*>}
  * @throws {KeyFoundError} If the resource already exists
  */
-function put(table, resourceId, resourceData) {
+function put(resourceId, resourceData) {
 	return new Promise((resolve, reject) =>
 		has(resourceId)
 			.then((exists) => (exists) ? reject(new KeyFoundError(resourceId)) : Promise.resolve())
@@ -64,7 +65,7 @@ function put(table, resourceId, resourceData) {
  * @returns {Promise<*>}
  * @throws {KeyNotFoundError} If the resource is not found
  */
-function del(table, resourceId) {
+function del(resourceId) {
 	return new Promise((resolve, reject) =>
 		PSQLStorageEngine.pool.query(`DELETE FROM ${table} WHERE id = '${resourceId}';`, (err) =>
 			(err) ? reject(err) : resolve()));
@@ -75,7 +76,7 @@ function del(table, resourceId) {
  * @param {string} resourceId The resource id
  * @returns {Promise<boolean>}
  */
-function has(table, resourceId) {
+function has(resourceId) {
 	return new Promise((resolve, reject) =>
 		PSQLStorageEngine.pool.query(`SELECT * FROM ${table} WHERE id = '${resourceId}';`, (err, res) =>
 			(err) ? reject(err)
@@ -164,11 +165,10 @@ class PSQLStorageEngine extends StorageEngine {
 	 * @returns {Promise<*>}
 	 */
 	migrate(data) {
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve, reject) =>
 			Promise.all(data.map(([key, value]) => has(key).then((exists) => !exists && put(key, value))))
 				.then((results) => resolve(`${results.length} entries migrated`))
-				.catch(reject);
-		});
+				.catch(reject));
 	}
 
 	/** Delete the table
@@ -182,6 +182,7 @@ class PSQLStorageEngine extends StorageEngine {
 }
 
 const { sslPath, host, port, username, password, database, table } = require(path.join(process.cwd(), 'auth.psql.json'));
+TABLE = table;
 const assEngine = new PSQLStorageEngine({
 	ssl: {
 		rejectUnauthorized: true,
