@@ -1,11 +1,12 @@
 # ass-psql
 
-[ass] PostgreSQL StorageEngine.
+PostgreSQL [Papito] data engine. Intended for use with [ass].
 
 ## Usage
 
+1. Install ass as per the [ass installation instructions]. During setup, set the data engine to `@tycrek/ass-psql`. If you need to re-run the setup, run `npm run setup`.
 1. Install with `npm i @tycrek/ass-psql`
-2. Create `auth.psql.json` in your project root with the following content:
+2. Create `auth.psql.json` in the ass root directory with the following content:
   ```json
   {
     "sslPath": "filename-of-your-ca-cert.crt",
@@ -13,7 +14,8 @@
     "port": 12345,
     "username": "your-db-username",
     "password": "your-db-password",
-    "database": "your-database-or-pool"
+    "database": "your-database-or-pool",
+    "table": "your-table-name"
   }
   ```
   | Key | Description |
@@ -24,6 +26,20 @@
   | `username` | Username of the PostgreSQL user |
   | `password` | Password of the PostgreSQL user |
   | `database` | Name of the database to connect to |
+  | `table` | Name of the table to store the data in |
+
+[ass]: https://github.com/tycrek/ass
+[Papito]: https://github.com/tycrek/papito/
+[ass installation instructions]: https://github.com/tycrek/ass#installation
+# Don't read past here!
+# Don't read past here!
+# Don't read past here!
+# Don't read past here!
+# Don't read past here!
+
+
+The next group of steps are very outdated and should **not be used**.
+
 3. Add `@tycrek/ass-psql` to `data.js` using `require` & create a new instance of `PSQLStorageEngine`:
   ```js
   // Import the package
@@ -119,5 +135,4 @@ Come and get your ass!
 
 </details>
 
-[ass]: https://github.com/tycrek/ass
 [DigitalOcean Managed PostgreSQL Databases]: https://www.digitalocean.com/products/managed-databases-postgresql/
