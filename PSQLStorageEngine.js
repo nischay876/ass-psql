@@ -175,6 +175,7 @@ class PSQLStorageEngine extends StorageEngine {
 	}
 }
 
+const assEngine = require('./PapitoPsqlAss');
 module.exports = {
 	EngineName,
 	EngineVersion,
