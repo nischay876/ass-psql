@@ -1,3 +1,4 @@
+const path = require('path');
 const { mergeNoArray } = require('./deepMerge');
 const { name: EngineName, version: EngineVersion } = require('./package.json');
 const { Pool } = require('pg');
@@ -179,7 +180,20 @@ class PSQLStorageEngine extends StorageEngine {
 	}
 }
 
-const assEngine = require('./PapitoPsqlAss');
+const { sslPath, host, port, username, password, database, table } = require(path.join(process.cwd(), 'auth.psql.json'));
+const assEngine = new PSQLStorageEngine({
+	ssl: {
+		rejectUnauthorized: true,
+		ca: require('fs-extra').readFileSync(`${sslPath}`).toString()
+	},
+	host,
+	port,
+	username,
+	password,
+	database,
+	table
+});
+
 module.exports = {
 	EngineName,
 	EngineVersion,
