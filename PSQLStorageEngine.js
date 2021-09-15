@@ -133,7 +133,8 @@ class PSQLStorageEngine extends StorageEngine {
 							? reject(err)
 							: oldEngine.get()
 								.then((oldData) => this.migrate(oldData))
-								.then(() => resolve(`Table ${table} created`)));
+								.then(() => resolve(`Table ${table} created`))
+								.catch((err) => reject(err)));
 				} else resolve(`Table ${table} exists`);
 			});
 		});
