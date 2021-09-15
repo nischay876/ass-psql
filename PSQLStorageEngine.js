@@ -8,7 +8,6 @@ const TIMEOUTS = {
 	CONNECT: 5000,
 };
 
-const TABLE_NAME = 'ass';
 const OPTIONS = {
 	ssl: {
 		rejectUnauthorized: true,
@@ -16,6 +15,7 @@ const OPTIONS = {
 	},
 	host: 'localhost',
 	port: 12345,
+	table: 'ass',
 	database: 'dbname',
 	username: 'dbuser',
 	password: 'dbpass',
@@ -27,14 +27,14 @@ const OPTIONS = {
  * @returns {Promise<*>} The resource data
  * @throws {KeyNotFoundError} If the resource is not found
  */
-function get(resourceId) {
+function get(table, resourceId) {
 	return new Promise((resolve, reject) =>
 		(!resourceId)
-			? PSQLStorageEngine.pool.query(`SELECT * FROM ${TABLE_NAME};`,
+			? PSQLStorageEngine.pool.query(`SELECT * FROM ${table};`,
 				(err, res) => (err)
 					? reject(err)
 					: resolve(res.rows.map(({ id, data }) => [id, data])))
-			: PSQLStorageEngine.pool.query(`SELECT * FROM ${TABLE_NAME} WHERE id = '${resourceId}';`,
+			: PSQLStorageEngine.pool.query(`SELECT * FROM ${table} WHERE id = '${resourceId}';`,
 				(err, res) => (err)
 					? reject(err)
 					: (res.rows.length === 0)
@@ -49,11 +49,11 @@ function get(resourceId) {
  * @returns {Promise<*>}
  * @throws {KeyFoundError} If the resource already exists
  */
-function put(resourceId, resourceData) {
+function put(table, resourceId, resourceData) {
 	return new Promise((resolve, reject) =>
 		has(resourceId)
 			.then((exists) => (exists) ? reject(new KeyFoundError(resourceId)) : Promise.resolve())
-			.then(() => PSQLStorageEngine.pool.query(`INSERT INTO ${TABLE_NAME} (id, data) VALUES ('${resourceId}', '${JSON.stringify(resourceData)}');`, (err) =>
+			.then(() => PSQLStorageEngine.pool.query(`INSERT INTO ${table} (id, data) VALUES ('${resourceId}', '${JSON.stringify(resourceData)}');`, (err) =>
 				(err) ? reject(err) : resolve())));
 }
 
@@ -63,9 +63,9 @@ function put(resourceId, resourceData) {
  * @returns {Promise<*>}
  * @throws {KeyNotFoundError} If the resource is not found
  */
-function del(resourceId) {
+function del(table, resourceId) {
 	return new Promise((resolve, reject) =>
-		PSQLStorageEngine.pool.query(`DELETE FROM ${TABLE_NAME} WHERE id = '${resourceId}';`, (err) =>
+		PSQLStorageEngine.pool.query(`DELETE FROM ${table} WHERE id = '${resourceId}';`, (err) =>
 			(err) ? reject(err) : resolve()));
 }
 
@@ -74,9 +74,9 @@ function del(resourceId) {
  * @param {string} resourceId The resource id
  * @returns {Promise<boolean>}
  */
-function has(resourceId) {
+function has(table, resourceId) {
 	return new Promise((resolve, reject) =>
-		PSQLStorageEngine.pool.query(`SELECT * FROM ${TABLE_NAME} WHERE id = '${resourceId}';`, (err, res) =>
+		PSQLStorageEngine.pool.query(`SELECT * FROM ${table} WHERE id = '${resourceId}';`, (err, res) =>
 			(err) ? reject(err)
 				: resolve(res.rows.length !== 0)));
 }
@@ -118,7 +118,7 @@ class PSQLStorageEngine extends StorageEngine {
 	init(oldEngine) {
 		return new Promise((resolve, reject) => {
 			// Get the options 
-			const { ssl, host, port, database, username: user, password } = this.#options;
+			const { ssl, host, port, database, username: user, password, table } = this.#options;
 
 			// Create the pool
 			PSQLStorageEngine.pool = new Pool({ ssl, host, port, database, user, password, idleTimeoutMillis: TIMEOUTS.IDLE, connectTimeoutMillis: TIMEOUTS.CONNECT });
@@ -126,14 +126,14 @@ class PSQLStorageEngine extends StorageEngine {
 			// Create the table if it doesn't exist
 			PSQLStorageEngine.pool.query(`SELECT * FROM pg_catalog.pg_tables`, (err, res) => {
 				if (err) reject(err);
-				else if (res.rows.findIndex((row) => row.tablename === TABLE_NAME) === -1) {
-					PSQLStorageEngine.pool.query(`CREATE TABLE ${TABLE_NAME} (id text PRIMARY KEY, data jsonb NOT NULL);`,
+				else if (res.rows.findIndex((row) => row.tablename === table) === -1) {
+					PSQLStorageEngine.pool.query(`CREATE TABLE ${table} (id text PRIMARY KEY, data jsonb NOT NULL);`,
 						(err) => (err && !err.message.includes('does not exist'))
 							? reject(err)
 							: oldEngine.get()
 								.then((oldData) => this.migrate(oldData))
-								.then(() => resolve(`Table ${TABLE_NAME} created`)));
-				} else resolve(`Table ${TABLE_NAME} exists`);
+								.then(() => resolve(`Table ${table} created`)));
+				} else resolve(`Table ${table} exists`);
 			});
 		});
 	}
@@ -146,7 +146,7 @@ class PSQLStorageEngine extends StorageEngine {
 	async #size() {
 		try {
 			const promise = new Promise((resolve, reject) =>
-				PSQLStorageEngine.pool.query(`SELECT COUNT(*) FROM ${TABLE_NAME};`, (err, res) =>
+				PSQLStorageEngine.pool.query(`SELECT COUNT(*) FROM ${this.#options.table};`, (err, res) =>
 					(err) ? reject(err)
 						: resolve(res.rows[0].count)));
 			const data = await promise;
@@ -174,7 +174,7 @@ class PSQLStorageEngine extends StorageEngine {
 	 */
 	deleteTable() {
 		return new Promise((resolve, reject) =>
-			PSQLStorageEngine.pool.query(`DROP TABLE ${TABLE_NAME};`, (err) =>
+			PSQLStorageEngine.pool.query(`DROP TABLE ${this.#options.table};`, (err) =>
 				(err) ? reject(err) : resolve()));
 	}
 }

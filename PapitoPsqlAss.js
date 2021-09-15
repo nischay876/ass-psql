@@ -1,6 +1,6 @@
 const path = require('path');
 const { PSQLStorageEngine } = require('./PSQLStorageEngine');
-const { sslPath, host, port, username, password, database } = require(path.join(process.cwd(), 'auth.psql.json'));
+const { sslPath, host, port, username, password, database, table } = require(path.join(process.cwd(), 'auth.psql.json'));
 
 const engine = new PSQLStorageEngine({
 	ssl: {
@@ -11,7 +11,8 @@ const engine = new PSQLStorageEngine({
 	port,
 	username,
 	password,
-	database
+	database,
+	table
 });
 
 // Export the StorageEngine
