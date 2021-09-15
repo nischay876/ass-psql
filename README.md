@@ -36,7 +36,7 @@
   const data = new PSQLStorageEngine({
     ssl: { 
       rejectUnauthorized: true,
-	  ca: require('fs-extra').readFileSync(`${sslPath}`).toString()
+	    ca: require('fs-extra').readFileSync(`${sslPath}`).toString()
     }, 
     host, 
     port, 
