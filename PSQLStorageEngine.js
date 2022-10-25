@@ -11,10 +11,6 @@ const TIMEOUTS = {
 };
 
 const OPTIONS = {
-	ssl: {
-		rejectUnauthorized: true,
-		ca: 'ca-cert',
-	},
 	host: 'localhost',
 	port: 12345,
 	table: 'ass',
@@ -181,13 +177,9 @@ class PSQLStorageEngine extends StorageEngine {
 	}
 }
 
-const { sslPath, host, port, username, password, database, table } = require(path.join(process.cwd(), 'auth.psql.json'));
+const { host, port, username, password, database, table } = require(path.join(process.cwd(), 'auth.psql.json'));
 TABLE = table;
 const assEngine = new PSQLStorageEngine({
-	ssl: {
-		rejectUnauthorized: true,
-		ca: require('fs-extra').readFileSync(`${sslPath}`).toString()
-	},
 	host,
 	port,
 	username,
