@@ -1,5 +1,5 @@
 {
-  "name": "@tycrek/ass-psql",
+  "name": "@nischay876/ass-psql",
   "version": "0.1.8",
   "description": "ass PostgreSQL StorageEngine",
   "main": "PSQLStorageEngine.js",
