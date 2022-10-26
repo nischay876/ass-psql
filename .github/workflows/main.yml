@@ -14,7 +14,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: /opt/hostedtoolcache/node/14.20.1/x64/bin/npm cache clean && /opt/hostedtoolcache/node/14.20.1/x64/bin/npm cache verify && /opt/hostedtoolcache/node/14.20.1/x64/bin/npm install
+      - run: /opt/hostedtoolcache/node/14.20.1/x64/bin/npm install --cache /tmp/empty-cache && /opt/hostedtoolcache/node/14.20.1/x64/bin/npm cache verify && /opt/hostedtoolcache/node/14.20.1/x64/bin/npm install
         name: Build
       - run: /opt/hostedtoolcache/node/14.20.1/x64/bin/npm run test
         env:
