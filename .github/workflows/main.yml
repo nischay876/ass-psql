@@ -14,9 +14,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
+      - run: npm cache clean –force && npm cache verify && npm install
         name: Build
-      - run: npm test
+      - run: npm run test
         env:
           CI: true
 
