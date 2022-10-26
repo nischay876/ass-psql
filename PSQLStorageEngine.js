@@ -116,10 +116,10 @@ class PSQLStorageEngine extends StorageEngine {
 	init(oldEngine) {
 		return new Promise((resolve, reject) => {
 			// Get the options 
-			const { ssl, host, port, database, username: user, password, table } = this.#options;
+			const { host, port, database, username: user, password, table } = this.#options;
 
 			// Create the pool
-			PSQLStorageEngine.pool = new Pool({ ssl, host, port, database, user, password, idleTimeoutMillis: TIMEOUTS.IDLE, connectTimeoutMillis: TIMEOUTS.CONNECT });
+			PSQLStorageEngine.pool = new Pool({ host, port, database, user, password, idleTimeoutMillis: TIMEOUTS.IDLE, connectTimeoutMillis: TIMEOUTS.CONNECT });
 
 			// Create the table if it doesn't exist
 			PSQLStorageEngine.pool.query(`SELECT * FROM pg_catalog.pg_tables`, (err, res) => {
