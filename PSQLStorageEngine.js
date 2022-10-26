@@ -186,8 +186,7 @@ const assEngine = new PSQLStorageEngine({
 	username,
 	password,
 	database,
-	table,
-        ssl
+	table
 });
 
 module.exports = {
