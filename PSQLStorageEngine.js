@@ -17,6 +17,7 @@ const OPTIONS = {
 	database: 'dbname',
 	username: 'dbuser',
 	password: 'dbpass',
+        ssl: true,
 };
 
 /**
@@ -185,7 +186,8 @@ const assEngine = new PSQLStorageEngine({
 	username,
 	password,
 	database,
-	table
+	table,
+        ssl
 });
 
 module.exports = {
