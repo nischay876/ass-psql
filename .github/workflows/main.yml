@@ -14,9 +14,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm cache clean –force && npm cache verify && npm install
+      - run: /opt/hostedtoolcache/node/14.20.1/x64/bin/npm cache clean –force && /opt/hostedtoolcache/node/14.20.1/x64/bin/npm cache verify && /opt/hostedtoolcache/node/14.20.1/x64/bin/npm install
         name: Build
-      - run: npm run test
+      - run: /opt/hostedtoolcache/node/14.20.1/x64/bin/npm run test
         env:
           CI: true
 
@@ -31,7 +31,7 @@ jobs:
           node-version: 14
       - name: Publish
         run: |
-          npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
-          npm publish --public --ignore-scripts
+          /opt/hostedtoolcache/node/14.20.1/x64/bin/npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+          /opt/hostedtoolcache/node/14.20.1/x64/bin/npm publish --public --ignore-scripts
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
